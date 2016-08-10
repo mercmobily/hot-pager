@@ -1,0 +1,75 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-button/paper-button.html">
+
+<!--
+`hot-pager`
+Pager element for Hotplate
+
+@demo demo/index.html
+-->
+
+<dom-module id="hot-pager">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-button.pager {
+        padding: 0;
+        --paper-button: {
+          min-width: 2em;
+        }
+        ;
+      }
+    </style>
+    <div>
+      {{pagerData.jumpPrev}} {{pagerData.jumpNext}}
+      <template is="dom-repeat" items="[[pagerData.items]]">
+        <paper-button class="pager" elevation$="{{_compute(item)}}" on-tap="_changePage">
+          [[item.page]]
+        </paper-button>
+      </template>
+    </div>
+
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'hot-pager',
+
+      properties: {
+
+        page: {
+          type: String,
+          notify: true,
+        },
+
+        pagerData: {
+          type: Object,
+        },
+
+        pressedElevation: {
+          type: Number,
+          value: 1
+        },
+
+        raisedElevation: {
+          type: Number,
+          value: 4
+        }
+      },
+
+      _changePage: function(e) {
+        this.page = e.model.item.page;
+      },
+      _compute: function(item) {
+        if (item.current) return this.pressedElevation;
+        return this.raisedElevation;
+      }
+
+    });
+  </script>
+</dom-module>
