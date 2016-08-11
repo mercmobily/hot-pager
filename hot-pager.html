@@ -66,10 +66,12 @@ Most importantly, _all_ possible calculations are already done in `pagerData`.
 
         <paper-button disabled$="{{!pagerData.moreToLeft}}" raised class="pager" on-tap="_jumpPage" jump-to$="{{pagerData.jumpPrev}}">&lt;</paper-button>
 
-        <template observe="current" is="dom-repeat" items="[[pagerData.items]]">
+        <template is="dom-repeat" items="[[pagerData.items]]">
+
           <paper-button current$="[[item.current]]" noink class="pager" elevation$="{{_computeElevation(item)}}" on-tap="_changePage">
             [[item.page]]
           </paper-button>
+
         </template>
 
         <paper-button disabled$="{{!pagerData.moreToRight}}" raised class="pager" on-tap="_jumpPage" jump-to$="{{pagerData.jumpNext}}">&gt;</paper-button>
@@ -132,8 +134,7 @@ Most importantly, _all_ possible calculations are already done in `pagerData`.
         this.page = e.model.item.page;
       },
       _computeElevation: function(item) {
-        if (item.current) return this.pressedElevation;
-        return this.raisedElevation;
+        return item.current ? this.pressedElevation : this.raisedElevation;
       },
       _currentIsFirst: function() {
         return this.pagerData.currentPage == 1;
