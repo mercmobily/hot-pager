@@ -1,38 +1,37 @@
-# \<hot-pager\>
-
+`hot-pager`
 Pager element for Hotplate
 
-## Install the Polymer-CLI
+This is a very simple, basic pager. All it does is display all of the pagerData items, using a dom-repeat template.
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
+A common way of using it is a follows;
 
-## Viewing Your Application
+    <hot-network target-id="aj" manage-errors>
 
-```
-$ polymer serve
-```
+      <hot-ajax-paging from="0" to="9" per-page="10" current-page="1" pager-data="{{pagerData}}">
+        <iron-ajax id="aj" auto url="/stores/polymer" handle-as="json" last-response="{{data}}"></iron-ajax>
+      </hot-ajax-paging>
 
-## Building Your Application
+      <template is="dom-repeat" items="[[data]]">
+        <paper-card heading="[[item.name]]">
+          <div class="card-content">
+            <div>Name: <span>{{item.name}}</span></div>
+            <div>Surname: <span>{{item.surame}}</span></div>
+          </div>
+        </paper-card>
 
-```
-$ polymer build
-```
+      </template>
+    </hot-network>
 
-This will create a `build/` folder with `bundled/` and `unbundled/` sub-folders
-containing a bundled (Vulcanized) and unbundled builds, both run through HTML,
-CSS, and JS optimizers.
+    <hot-pager pager-data="{{pagerData}}" page="{{currentPage}}"></hot-pager>
 
-You can serve the built versions by giving `polymer serve` a folder to serve
-from:
+Here:
 
-```
-$ polymer serve build/bundled
-```
+* `hot-network` is used to make sure that network resilience is handled. Note that hot-network's target is the `iron-ajax` element.
+* The `iron-ajax` element is wrapper with `hot-ajax-paging`. This will make sure that `idon-ajax` has the right headers set for each request, depending of what page is requested.
+* The data (coming from the bound property `data` in `iron-ajax`) is displayed with a typical `dom-repeat`
+* The pager is used, passing it `pagerData`. Here, `pagerData` will always be changed by `hot-ajax-paging`, and will depend on the page requested by the user as well as the number of results returned by the AJAX query
 
-## Running Tests
+This is only example code. Custom pagers could show more information (such as the total number of records, etc.) and look very different. This is a basic starting point, where the most commong example of pagination is shown.
 
-```
-$ polymer test
-```
+Most importantly, _all_ possible calculations are already done in `pagerData`.
 
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
