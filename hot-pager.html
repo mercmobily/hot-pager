@@ -30,7 +30,7 @@ A common way of using it is a follows;
 
 Here:
 
-* `hot-network` is used to make sure that network resilience is handled. Note that hot-network's target is the `iron-ajax` element.
+* `hot-network` is used to make sure that network resilience is handled. Note that hot-network's target is the `iron-ajax` element. This is strongly recommended.
 * The `iron-ajax` element is wrapper with `hot-ajax-paging`. This will make sure that `idon-ajax` has the right headers set for each request, depending of what page is requested.
 * The data (coming from the bound property `data` in `iron-ajax`) is displayed with a typical `dom-repeat`
 * The pager is used, passing it `pagerData`. Here, `pagerData` will always be changed by `hot-ajax-paging`, and will depend on the page requested by the user as well as the number of results returned by the AJAX query
