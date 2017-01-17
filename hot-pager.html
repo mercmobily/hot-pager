@@ -1,5 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
 
 <!--
 `hot-pager`
@@ -44,105 +46,93 @@ Most importantly, _all_ possible calculations are already done in `pagerData`.
 
 <dom-module id="hot-pager">
   <template>
-    <style>
+    <style include="iron-flex">
       :host {
-        display: block;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
       }
-
-      paper-button.pager {
+      paper-button {
         padding: 0;
-        --paper-button: {
-          min-width: 2em;
-        }
-        ;
+        min-height: var(--hot-pager-button-height, 30px);
+        min-width: 2rem;
+        @apply(--hot-pager-button);
+      }
+      paper-button[disabled] {
+        background-color: transparent;
+        @apply(--hot-pager-button-disabled);
+      }
+      paper-button[active] {
+        background-color: var(--hot-pager-button-active-background, --primary-color);
+        color: var(--hot-pager-button-active-color, #fff);
+        @apply(--hot-pager-number-button-active);
+      }
+      .number {
+        @apply(--hot-pager-number-button);        
+      }
+      .arrow {
+        padding-left: 8px;
+        padding-right: 8px;
+        @apply(--hot-pager-arrow-button);
       }
     </style>
-    <div>
+    
+    <template is="dom-if" if="{{pagerData.items.length}}">
+      <paper-button disabled$="{{_currentIsFirst(pagerData)}}" class="arrow" on-tap="_jumpPage" jump-to="1" title="First page" aria-label="First page">
+        <iron-icon icon="first-page"></iron-icon>
+      </paper-button>
+      <paper-button disabled$="{{!pagerData.moreToLeft}}" class="arrow" on-tap="_jumpPage" jump-to$="{{pagerData.jumpPrev}}" title="Previous page" aria-label="Previous page">
+        <iron-icon icon="chevron-left"></iron-icon>
+      </paper-button>
 
-      <!-- Only do anything if there is data -->
-      <template is="dom-if" if="{{pagerData.items.length}}">
-
-        <paper-button disabled$="{{_currentIsFirst(pagerData)}}" raised class="pager" on-tap="_jumpPage" jump-to="1">&lt;&lt;</paper-button>
-
-        <paper-button disabled$="{{!pagerData.moreToLeft}}" raised class="pager" on-tap="_jumpPage" jump-to$="{{pagerData.jumpPrev}}">&lt;</paper-button>
-
-        <template is="dom-repeat" items="[[pagerData.items]]">
-
-          <paper-button current$="[[item.current]]" noink class="pager" elevation$="{{_computeElevation(item)}}" on-tap="_changePage">
-            [[item.page]]
-          </paper-button>
-
-        </template>
-
-        <paper-button disabled$="{{!pagerData.moreToRight}}" raised class="pager" on-tap="_jumpPage" jump-to$="{{pagerData.jumpNext}}">&gt;</paper-button>
-
-        <paper-button disabled$="{{_currentIsLast(pagerData)}}" raised class="pager" on-tap="_jumpPage" jump-to$="{{pagerData.totalPages}}">&gt;&gt;</paper-button>
-
+      <template is="dom-repeat" items="[[pagerData.items]]">
+        <paper-button active$="[[item.current]]" class="number" on-tap="_changePage" title="[[_numberButtonTitle(index)]]" aria-label="[[_numberButtonTitle(index)]]">
+          [[item.page]]
+        </paper-button>
       </template>
 
-    </div>
-
-
+      <paper-button disabled$="{{!pagerData.moreToRight}}" class="arrow" on-tap="_jumpPage" jump-to$="{{pagerData.jumpNext}}" title="Next page" aria-label="Next page">
+        <iron-icon icon="chevron-right"></iron-icon>
+      </paper-button>
+      <paper-button disabled$="{{_currentIsLast(pagerData)}}" class="arrow" on-tap="_jumpPage" jump-to$="{{pagerData.totalPages}}" title="Last page" aria-label="Last page">
+        <iron-icon icon="last-page"></iron-icon>
+      </paper-button>
+    </template>
   </template>
 
   <script>
     Polymer({
-
       is: 'hot-pager',
 
       properties: {
-
         /**
          * The current page
-         *
          */
         page: {
           type: String,
-          notify: true,
+          notify: true
         },
 
         /**
-         * The pagerData, used to rendere the pager
-         *
+         * The pagerData, used to render the pager
          */
-        pagerData: {
-          type: Object,
-        },
-
-        /**
-         * The elevation for the current page button
-         */
-        pressedElevation: {
-          type: Number,
-          value: 1
-        },
-
-        /**
-         * The elevation for a page button that is not the current one
-         */
-        raisedElevation: {
-          type: Number,
-          value: 4
-        }
+        pagerData: Object
       },
 
-      _jumpPage: function(e) {;
+      _numberButtonTitle: function(index) {
+        return 'Go to page ' + (index+1);
+      },
+      _jumpPage: function(e) {
         this.page = e.target.getAttribute('jump-to');
       },
-
       _changePage: function(e) {
         this.page = e.model.item.page;
-      },
-      _computeElevation: function(item) {
-        return item.current ? this.pressedElevation : this.raisedElevation;
       },
       _currentIsFirst: function() {
         return this.pagerData.currentPage == 1;
       },
       _currentIsLast: function() {
         return this.pagerData.currentPage == this.pagerData.totalPages;
-      },
-
+      }
     });
   </script>
 </dom-module>
