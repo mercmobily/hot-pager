@@ -1,32 +1,52 @@
 <!doctype html>
-
-<html>
+<html lang="en">
   <head>
-    <title>hot-pager test</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>hot-pager test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
 
     <link rel="import" href="../hot-pager.html">
   </head>
   <body>
 
-    <test-fixture id="basic">
+    <test-fixture id="BasicTestFixture">
       <template>
         <hot-pager></hot-pager>
       </template>
     </test-fixture>
 
-    <script>
-      suite('hot-pager', function() {
+    <test-fixture id="ChangedPropertyTestFixture">
+      <template>
+        <hot-pager prop1="new-prop1"></hot-pager>
+      </template>
+    </test-fixture>
 
-        test('instantiating the element works', function() {
-          var element = fixture('basic');
-          assert.equal(element.is, 'hot-pager');
+    <script>
+      suite('hot-pager', () => {
+
+        test('instantiating the element with default properties works', () => {
+          const element = fixture('BasicTestFixture');
+          assert.equal(element.prop1, 'hot-pager');
+          const elementShadowRoot = element.shadowRoot;
+          const elementHeader = elementShadowRoot.querySelector('h2');
+          assert.equal(elementHeader.innerHTML, 'Hello hot-pager!');
+        });
+
+        test('setting a property on the element works', () => {
+          // Create a test fixture
+          const element = fixture('ChangedPropertyTestFixture');
+          assert.equal(element.prop1, 'new-prop1');
+          const elementShadowRoot = element.shadowRoot;
+          const elementHeader = elementShadowRoot.querySelector('h2');
+          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
         });
 
       });
     </script>
+
   </body>
 </html>

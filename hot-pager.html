@@ -67,7 +67,7 @@ Most importantly, _all_ possible calculations are already done in `pagerData`.
         @apply(--hot-pager-number-button-active);
       }
       .number {
-        @apply(--hot-pager-number-button);        
+        @apply(--hot-pager-number-button);
       }
       .arrow {
         padding-left: 8px;
@@ -75,22 +75,22 @@ Most importantly, _all_ possible calculations are already done in `pagerData`.
         @apply(--hot-pager-arrow-button);
       }
     </style>
-    
+
     <template is="dom-if" if="{{pagerData.items.length}}">
       <paper-button disabled$="{{_currentIsFirst(pagerData)}}" class="arrow" on-tap="_jumpPage" jump-to="1" title="First page" aria-label="First page">
         <iron-icon icon="first-page"></iron-icon>
       </paper-button>
-      <paper-button disabled$="{{!pagerData.moreToLeft}}" class="arrow" on-tap="_jumpPage" jump-to$="{{pagerData.jumpPrev}}" title="Previous page" aria-label="Previous page">
+      <paper-button disabled$="{{!pagerData.moreToLeft}}" class="arrow" on-tap="_jumpPage" jump-to$="{{pagerData.jumpPrev}}" title="Skip backwards" aria-label="Skip backwards">
         <iron-icon icon="chevron-left"></iron-icon>
       </paper-button>
 
       <template is="dom-repeat" items="[[pagerData.items]]">
-        <paper-button active$="[[item.current]]" class="number" on-tap="_changePage" title="[[_numberButtonTitle(index)]]" aria-label="[[_numberButtonTitle(index)]]">
+        <paper-button active$="[[item.current]]" class="number" on-tap="_changePage" title="[[_numberButtonTitle(item.page)]]" aria-label="[[_numberButtonTitle(item.page)]]">
           [[item.page]]
         </paper-button>
       </template>
 
-      <paper-button disabled$="{{!pagerData.moreToRight}}" class="arrow" on-tap="_jumpPage" jump-to$="{{pagerData.jumpNext}}" title="Next page" aria-label="Next page">
+      <paper-button disabled$="{{!pagerData.moreToRight}}" class="arrow" on-tap="_jumpPage" jump-to$="{{pagerData.jumpNext}}" title="Skip forwards" aria-label="Skip forwards">
         <iron-icon icon="chevron-right"></iron-icon>
       </paper-button>
       <paper-button disabled$="{{_currentIsLast(pagerData)}}" class="arrow" on-tap="_jumpPage" jump-to$="{{pagerData.totalPages}}" title="Last page" aria-label="Last page">
@@ -100,39 +100,44 @@ Most importantly, _all_ possible calculations are already done in `pagerData`.
   </template>
 
   <script>
-    Polymer({
-      is: 'hot-pager',
+/* global Polymer,customElements */
+class HotPager extends Polymer.Element {
+  static get is () { return 'hot-pager' }
 
-      properties: {
-        /**
-         * The current page
-         */
-        page: {
-          type: String,
-          notify: true
-        },
-
-        /**
-         * The pagerData, used to render the pager
-         */
-        pagerData: Object
+  static get properties () {
+    return {
+    /**
+       * The current page
+       */
+      page: {
+        type: String,
+        notify: true
       },
 
-      _numberButtonTitle: function(index) {
-        return 'Go to page ' + (index+1);
-      },
-      _jumpPage: function(e) {
-        this.page = e.target.getAttribute('jump-to');
-      },
-      _changePage: function(e) {
-        this.page = e.model.item.page;
-      },
-      _currentIsFirst: function() {
-        return this.pagerData.currentPage == 1;
-      },
-      _currentIsLast: function() {
-        return this.pagerData.currentPage == this.pagerData.totalPages;
-      }
-    });
+      /**
+       * The pagerData, used to render the pager
+       */
+      pagerData: Object
+    }
+  }
+
+  _numberButtonTitle (index) {
+    return 'Go to page ' + (index)
+  }
+  _jumpPage (e) {
+    this.page = e.currentTarget.getAttribute('jump-to')
+  }
+  _changePage (e) {
+    this.page = e.model.item.page
+  }
+  _currentIsFirst () {
+    return this.pagerData.currentPage === 1
+  }
+  _currentIsLast () {
+    return this.pagerData.currentPage === this.pagerData.totalPages
+  }
+}
+customElements.define(HotPager.is, HotPager)
+
   </script>
 </dom-module>
